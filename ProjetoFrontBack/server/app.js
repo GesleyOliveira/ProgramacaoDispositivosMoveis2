@@ -72,3 +72,20 @@ app.post("/add", async(req, res) => {
 app.listen(3000, () => {
     console.log('Servidor aberto na porta 3000');
 });
+
+app.put("/update/:id", async(req, res) => {
+    //pegando o parametro dia url
+    const id = req.params.is;
+    // dado do header
+    //array
+    const dados = req.body;
+    //objeto model
+    const u = await User.findByIdAndUpdate(id, dados)
+    if(u){
+        res.send({status:'alterado'})
+    } else {
+        res.send({status:'erro'});
+    }
+
+
+})
