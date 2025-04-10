@@ -47,8 +47,9 @@ let User = mongoose.model("Usuario", new mongoose.Schema({
 
 
 // Pasta Raiz
-app.get("/", (req, res) => {
-    res.send({status:"OK"});
+app.get("/", async(req, resp) => {
+    const users = await User.find({})
+    resp.send(users);
 });
 
 app.post("/add", async(req, res) => {
