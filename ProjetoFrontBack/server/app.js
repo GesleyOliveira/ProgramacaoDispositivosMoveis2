@@ -47,9 +47,9 @@ let User = mongoose.model("Usuario", new mongoose.Schema({
 
 
 // Pasta Raiz
-app.get("/", async(req, resp) => {
+app.get("/", async (req, res) => {
     const users = await User.find({})
-    resp.send(users);
+    res.send(users);
 });
 
 app.post("/add", async(req, res) => {
@@ -68,24 +68,40 @@ app.post("/add", async(req, res) => {
     res.send({status:"Usuário adicionado!"})
 });
 
+/*app.get('/add', async(req, res) => {
+    
+});*/
+
+app.put('/update/:id', async(req, res) => {
+    try{
+    // pegando o parametro via url
+    const id = req.params.id;
+    //dado do header
+    // array
+    const dados = req.body;
+    // objeto model
+    let newUser = await User.findByIdAndUpdate(id, dados);
+
+    res.status(200).send(newUser.toJSON());
+
+}catch(error){
+        res.status(404).send(error);
+    };
+});
+
+app.delete('/delete/:id', async(req, res) => {
+    try{
+    let id = req.params.id;
+    let i = await User.findByIdAndDelete(id);
+    
+    res.status(200).send({Msg:"Excluído com sucesso!"});
+    }catch(error){
+        res.status(404).send(error);
+    };
+});
+
+
 // Criar o servidor
 app.listen(3000, () => {
     console.log('Servidor aberto na porta 3000');
 });
-
-app.put("/update/:id", async(req, res) => {
-    //pegando o parametro dia url
-    const id = req.params.is;
-    // dado do header
-    //array
-    const dados = req.body;
-    //objeto model
-    const u = await User.findByIdAndUpdate(id, dados)
-    if(u){
-        res.send({status:'alterado'})
-    } else {
-        res.send({status:'erro'});
-    }
-
-
-})
