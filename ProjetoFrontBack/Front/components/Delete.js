@@ -1,30 +1,31 @@
-import React from "react";
-import { View, Pressable, Text } from "react-native"
+import React, { useEffect } from "react";
+import { View, Button, Pressable, Text } from 'react-native';
 
-const DadoDelete = (props) => {
 
-    const Delete = async (id) => {
-        await fetch(`http://localhost:3000/delete/${id}`, {
+
+const DadosDeletado = (props) => {
+
+
+    const Delete = (id, onDelete) => {
+        let url = `http://localhost:3000/delete/${id}`;
+        console.log(url);
+        fetch(url, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json; charset=UTF-8'
-            }
-        })
-            .then((resp) => resp.json())
-            .then((json) => {
-                window.alert(json.Msg)
-                window.location.reload()
-            })
-    };
+        }).then((response) => response.json())
+            .then((json) => console.log(json));
+    }
+
 
     return (
         <View>
-            <Pressable onPress={() => { Delete(props.id) }}
-                style={{ margin: 20, backgroundColor: '#00ffff', padding: 5, border: "1px solid #000" }}>
-                <Text>Excluir</Text>
+            <Pressable style={{ border: '1px solid black', padding: 2, margin: 5, width: '30%', alignItems: "center" }}
+
+                onPress={() => { Delete(props.id) }}>
+                <Text>excluir</Text>
             </Pressable>
         </View>
+
     )
 }
 
-export default DadoDelete;
+export default DadosDeletado;

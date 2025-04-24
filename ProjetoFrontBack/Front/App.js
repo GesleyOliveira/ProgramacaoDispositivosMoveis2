@@ -1,95 +1,154 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
-import DadoExiba from './components/Exiba';
+import { StyleSheet, Text, View, Button, FlatList, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import DadoInserir from './components/Inserir';
+import DadoExiba from './components/Exiba'
 
 export default function App() {
+  const [campos, setDados] = useState([])
 
-  // será utilizado para armazenar os dados db
-  const [campos, setCampos] = useState([]);
-
-  // renderizar o componente
+  
   useEffect(() => {
-    fetch('http://localhost:3000/')
-      .then((resp) => resp.json())
-      .then((resp) => {
-        console.log(resp);
-        setCampos(resp)
-      })
-  }, []);
 
-  const Exibir = async () => {
-    await fetch('http://localhost:3000/')
-      .then((resp) => resp.json())
-      .then((resp) => console.log(resp))
-  };
+    let url = 'http://localhost:3000/';
 
-
-  const AddUser = async () => {
-    await fetch('http://localhost:3000/add', {
-      method: 'POST',
-      body: JSON.stringify({
-        name: 'Gesley',
-        email: 'Gesley@email.com'
-      }),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
+    fetch(url)
+      .then((response) => response.json())
+      .then((json) => {
+        //console.log(json);
+        setDados(json);
+        //console.log(campos);
       }
-    }).then((resp) => resp.json())
+      );
+
+  }, [campos]); 
+
+  // get
+  //'http://172.16.4.101:3000/';
+  const Exibir = () => {
+    let url = 'http://localhost:3000/';
+    fetch(url)
+      .then((response) => response.json())
       .then((json) => {
         console.log(json);
-      })
-  };
+        setDados(json);
 
-  const Atualizar = async (id) => {
-    await fetch(`http://localhost:3000/update/${id}`, {
-      method: 'PUT',
+      }
+      );
+  }
+
+  //post
+
+  const Add = () => {
+    let url = 'http://172.16.4.101:3000/add/';
+    fetch(url, {
+      method: 'POST',
       body: JSON.stringify({
-        name: 'ABC',
-        email: 'abc@email.com'
+        nome: 'Gesley',
+        email: 'gesleyrosa@email.com'
       }),
       headers: {
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
+        'Content-type': 'application/json; charset=UTF-8',
+      },
     })
-      .then((resp) => resp.json())
-      .then((json) => console.log(json))
-  };
+      .then((response) => response.json())
+      .then((json) => console.log(json));
+  }
 
-  const Deletar = async (id) => {
-    await fetch(`http://localhost:3000/delete/${id}`, {
-      method: 'DELETE',
+  // PATCH
+  const Atualizar = (id) => {
+    let url = `http://192.168.67.126:3000/update/${id}`;
+    fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        nome: 'Lobo',
+        email: '@lobo'
+      }),
       headers: {
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
+        'Content-type': 'application/json; charset=UTF-8',
+      },
     })
-      .then((resp) => resp.json())
-      .then((json) => console.log(json))
-  };
+      .then((response) => response.json())
+      .then((json) => console.log(json));
+  }
 
+  //PUT
+  const Atualizar0 = (id) => {
+    let url = `http://172.68.0.156:3000/put_update/${id}`;
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify({
+        nome: 'Lobo',
+        email: '@lobo'
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => console.log(json));
+  }
+
+
+  const Delete = (id) => {
+    let url = `http://172.16.4.101:3000/delete/${id}`;
+    console.log(url);
+    fetch(url, {
+      method: 'DELETE',
+    }).then((response) => response.json())
+      .then((json) => console.log(json));
+  }
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text>Teste</Text>
-        <Button onPress={Exibir} title={'Botão Exibir'} />
-        <Button onPress={AddUser} title={'Botão POST'} />
-        <Button onPress={() => Atualizar('67eddaebb374b556f6172bea')} title={'Botão Atualizar'} />
-        <Button onPress={() => Deletar('67eddaebb374b556f6172bea')} title={'Botão Deletar'} />
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.title}>Gerenciamento de Usuários</Text>
+
+          <DadoInserir />
+
+
+        <TouchableOpacity style={styles.btn} onPress={() => Exibir()}>
+          <Text style={styles.btnText}>Exibir</Text>
+        </TouchableOpacity>
+
+        
         <DadoExiba campo={campos} />
         <StatusBar style="auto" />
-
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
+
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#f6f6f6',
   },
+  content: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    marginVertical: 10,
+    fontWeight: 'bold',
+  },
+  btn: {
+    backgroundColor: '#007BFF',
+    padding: 12,
+    marginVertical: 6,
+    borderRadius: 8,
+    width: '20%',
+    alignItems: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+  }
 });
+
+

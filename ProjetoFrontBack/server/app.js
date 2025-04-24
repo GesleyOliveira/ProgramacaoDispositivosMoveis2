@@ -1,107 +1,138 @@
-let express = require("express");
-let cors = require("cors");
-let mongoose = require("mongoose");
-let methodOverride = require("method-override")
+const express = require('express');
+const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
 
 
-// Criar Objeto
-let app = express();
 
+
+
+const app = express();
+const port = 3000;
+
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 app.use(cors());
 
-//Permissões de HTTP
-app.use(methodOverride('X-HTTP-Method'));
+
+//https://expressjs.com/en/resources/middleware/body-parser.html
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded(true))
+
+
+
+//https://expressjs.com/en/resources/middleware/method-override.htmlnpm
+app.use(methodOverride('X-HTTP-Method'))
 app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(methodOverride('X-Method-Override'));
 app.use(methodOverride('_method'));
 
-app.use((req, resp, next)=> {
-    resp.header("Access-Control-Allow-Origin", "*");
-    resp.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    resp.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
 
 
-// Mongoose
-let url = "mongodb://localhost:27017/ProjetoMobileFrontBack"
+// conexao
+let url = 'mongodb://localhost:27017/livro';
 
 mongoose.connect(url)
     .then(
-        ()=> {console.log("Conectado ao MongoDB")}
+        () => { console.log('Conecatado ao MongoDb') }
     ).catch(
-        (e) => {console.log("Erro ao conectar ao MongoDB")}
-    );
-
-
-// Criar uma estrutura no documento e coleção
-let User = mongoose.model("Usuario", new mongoose.Schema({
-    name: String,
+        (e) => { console.log(e) }
+    )
+//shema
+var Usuario = new mongoose.Schema({
+    nome: String,
     email: String,
+    senha: String,
+});
 
-}))
+// criar o model
+const RefDoc = new mongoose.model('Usuarios', Usuario);
 
 
 
-// Pasta Raiz
+
+// rota 
+
+// exibir
 app.get("/", async (req, res) => {
-    const users = await User.find({})
-    res.send(users);
+    const users = await RefDoc.find({});
+    res.json(users);
 });
 
-app.post("/add", async(req, res) => {
+// inserir
+app.post("/add", async (req, res) => {
 
-    //Pegar os dados
-    let vnome = req.body.name;
-    let vemail = req.body.email;
-
-    let item = await new User({
-        name: vnome,
-        email: vemail
-    });
-
-    // Comando do mongodb
-    item.save();
-    res.send({status:"Usuário adicionado!"})
+    let nome = req.body.nome;
+    let email = req.body.email;
+    const I = await new RefDoc({ nome: nome , email: email});
+    I.save();
+    res.send({ status: "adicionado" });
 });
 
-/*app.get('/add', async(req, res) => {
-    
-});*/
+// deletar
 
-app.put('/update/:id', async(req, res) => {
-    try{
-    // pegando o parametro via url
-    const id = req.params.id;
-    //dado do header
-    // array
-    const dados = req.body;
-    // objeto model
-    let newUser = await User.findByIdAndUpdate(id, dados);
-
-    res.status(200).send(newUser.toJSON());
-
-}catch(error){
-        res.status(404).send(error);
-    };
-});
-
-app.delete('/delete/:id', async(req, res) => {
-    try{
+app.delete("/delete/:id", async (req, res) => {
     let id = req.params.id;
-    let i = await User.findByIdAndDelete(id);
-    
-    res.status(200).send({Msg:"Excluído com sucesso!"});
-    }catch(error){
-        res.status(404).send(error);
-    };
+    let i = await RefDoc.findByIdAndDelete(id);
+    if (i) {
+        res.send({ status: "deletado" });
+    } else {
+        res.send({ erro: 'erro' });
+    }
 });
 
 
-// Criar o servidor
-app.listen(3000, () => {
-    console.log('Servidor aberto na porta 3000');
+// 
+app.put('/put_update/:id', async(req, res)=>{
+    const id = req.params.id;
+    const update = req.body;
+
+    const updatedUser = await RefDoc.findByIdAndUpdate( id, update);
+    if (updatedUser) {
+        res.send({ status: "alterado" });
+    } else {
+        res.send({ erro: 'erro' });
+    }
+
+});
+
+
+
+
+// atualizar campos espeficios
+app.patch('/update/:id', async (req, res) => {
+    const { id } = req.params;
+    const update = req.body;
+    //             // filtro, altera   
+    // .updateOne({ _id: id }, updateData);
+    const updatedUser = await RefDoc.updateOne({ _id: id }, update);
+    if (updatedUser) {
+        res.send({ status: "alterado" });
+    } else {
+        res.send({ erro: 'erro' });
+    }
+
+
+//       if (updatedUser.modifiedCount === 0) {
+//         return res.status(404).send('User not found or no changes made');
+//       }
+//       res.status(200).send('User updated successfully');
+//     } catch (err) {
+//       res.status(500).send('Error updating user');
+//     }
+//   }
+})
+
+
+
+
+
+app.listen(port, () => {
+    console.log(`Example  app listening port ${port}`)
+
 });
