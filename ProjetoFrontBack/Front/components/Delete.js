@@ -18,11 +18,9 @@ const DadosDeletado = (props) => {
 
     return (
         <View>
-            <Pressable style={{ border: '1px solid black', padding: 2, margin: 5, width: '30%', alignItems: "center" }}
-
-                onPress={() => { Delete(props.id) }}>
-                <Text>excluir</Text>
-            </Pressable>
+            <Button onPress={() => { Delete(props.id) }} title="Deletar" />
+                <br>
+                </br>
         </View>
 
     )

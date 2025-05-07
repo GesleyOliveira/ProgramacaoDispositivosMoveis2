@@ -5,23 +5,7 @@ import DadoInserir from './components/Inserir';
 import DadoExiba from './components/Exiba'
 
 export default function App() {
-  const [campos, setDados] = useState([])
-
-  
-  useEffect(() => {
-
-    let url = 'http://localhost:3000/';
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        //console.log(json);
-        setDados(json);
-        //console.log(campos);
-      }
-      );
-
-  }, [campos]); 
+ 
 
   // get
   //'http://172.16.4.101:3000/';
@@ -57,7 +41,7 @@ export default function App() {
 
   // PATCH
   const Atualizar = (id) => {
-    let url = `http://192.168.67.126:3000/update/${id}`;
+    let url = `http://localhost:3000//update/${id}`;
     fetch(url, {
       method: 'PATCH',
       body: JSON.stringify({
@@ -105,14 +89,8 @@ export default function App() {
         <Text style={styles.title}>Gerenciamento de Usuários</Text>
 
           <DadoInserir />
-
-
-        <TouchableOpacity style={styles.btn} onPress={() => Exibir()}>
-          <Text style={styles.btnText}>Exibir</Text>
-        </TouchableOpacity>
-
         
-        <DadoExiba campo={campos} />
+        <DadoExiba />
         <StatusBar style="auto" />
       </ScrollView>
     </SafeAreaView>

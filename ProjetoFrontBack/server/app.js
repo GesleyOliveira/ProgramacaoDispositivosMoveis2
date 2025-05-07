@@ -88,13 +88,12 @@ app.delete("/delete/:id", async (req, res) => {
 
 
 // 
-app.put('/put_update/:id', async(req, res)=>{
+app.get('/:id', async(req, res)=>{
     const id = req.params.id;
-    const update = req.body;
 
-    const updatedUser = await RefDoc.findByIdAndUpdate( id, update);
-    if (updatedUser) {
-        res.send({ status: "alterado" });
+    const userUp = await RefDoc.findById(id);
+    if (userUp) {
+        res.send({ user: userUp.toJSON() });
     } else {
         res.send({ erro: 'erro' });
     }
