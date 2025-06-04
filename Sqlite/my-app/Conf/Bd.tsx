@@ -46,12 +46,52 @@ async function selectUsuario(db: SQLite.SQLiteDatabase) {
         const resultado = await db.getAllAsync(
             `SELECT * FROM USUARIO`
         );
-        console.log('Usuários selecionados com sucesso:', result);
+        console.log('Usuários selecionados com sucesso:', resultado);
         return resultado;
     } catch (error) {
         console.error('Erro ao selecionar usuários:', error);
     }  
 }
 
+async function selectUsuarioById(
+    db: SQLite.SQLiteDatabase, id: number) {
+    
+    try {
+        const resultado = await db.getFirstAsync(
+            `SELECT * FROM USUARIO WHERE ID_US = ?`, id
+        );
+       
+        console.log('Usuário selecionado com sucesso:', resultado);
+        return resultado;
+    } catch (error) {
+        console.error('Erro ao selecionar usuário por ID:', error);
+    }
+}
 
-export {Banco, createTabela, insertUsuario};
+async function deleteUsuarioById(
+    db: SQLite.SQLiteDatabase, id: number) {
+    
+    try {
+        await db.runAsync(
+            `DELETE FROM USUARIO WHERE ID_US = ?`, id
+        );
+        console.log('Usuário deletado com sucesso');
+    } catch (error) {
+        console.error('Erro ao deletar usuário:', error);
+    }
+}
+
+async function updateUsuario(
+    db: SQLite.SQLiteDatabase, id: number, nome: string, email: string) {
+    try {
+        await db.runAsync(
+            `UPDATE USUARIO SET NOME_US = ?, EMAIL_US = ? WHERE ID_US = ?`,
+            [id, nome, email]
+        );
+        console.log('Usuário atualizado com sucesso');
+    } catch (error) {
+        console.error('Erro ao atualizar usuário:', error);
+    }
+}
+
+export {Banco, createTabela, insertUsuario, selectUsuario, selectUsuarioById, deleteUsuarioById, updateUsuario};
